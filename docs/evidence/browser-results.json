@@ -1,0 +1,152 @@
+[
+  {
+    "page": "home",
+    "width": 1920,
+    "lcp": 452,
+    "cls": 0,
+    "duration": 360.5,
+    "resources": 5
+  },
+  {
+    "page": "catalog",
+    "width": 1920,
+    "lcp": 168,
+    "cls": 0,
+    "duration": 140.90000000596046,
+    "resources": 5
+  },
+  {
+    "page": "search",
+    "width": 1920,
+    "lcp": 100,
+    "cls": 0,
+    "duration": 83,
+    "resources": 5
+  },
+  {
+    "page": "product",
+    "width": 1920,
+    "lcp": 100,
+    "cls": 0
+  },
+  {
+    "page": "home",
+    "width": 1440,
+    "lcp": 276,
+    "cls": 0,
+    "duration": 262.29999999701977,
+    "resources": 5
+  },
+  {
+    "page": "catalog",
+    "width": 1440,
+    "lcp": 148,
+    "cls": 0,
+    "duration": 124,
+    "resources": 5
+  },
+  {
+    "page": "search",
+    "width": 1440,
+    "lcp": 92,
+    "cls": 0,
+    "duration": 75.09999999403954,
+    "resources": 5
+  },
+  {
+    "page": "product",
+    "width": 1440,
+    "lcp": 84,
+    "cls": 0
+  },
+  {
+    "page": "home",
+    "width": 1366,
+    "lcp": 260,
+    "cls": 0,
+    "duration": 241.19999998807907,
+    "resources": 5
+  },
+  {
+    "page": "catalog",
+    "width": 1366,
+    "lcp": 152,
+    "cls": 0,
+    "duration": 124.29999999701977,
+    "resources": 5
+  },
+  {
+    "page": "search",
+    "width": 1366,
+    "lcp": 96,
+    "cls": 0,
+    "duration": 81.6000000089407,
+    "resources": 5
+  },
+  {
+    "page": "product",
+    "width": 1366,
+    "lcp": 92,
+    "cls": 0
+  },
+  {
+    "page": "home",
+    "width": 768,
+    "lcp": 384,
+    "cls": 0,
+    "duration": 366.29999999701977,
+    "resources": 5
+  },
+  {
+    "page": "catalog",
+    "width": 768,
+    "lcp": 152,
+    "cls": 0,
+    "duration": 127.59999999403954,
+    "resources": 5
+  },
+  {
+    "page": "search",
+    "width": 768,
+    "lcp": 100,
+    "cls": 0,
+    "duration": 85.70000000298023,
+    "resources": 5
+  },
+  {
+    "page": "product",
+    "width": 768,
+    "lcp": 104,
+    "cls": 0
+  },
+  {
+    "page": "home",
+    "width": 390,
+    "lcp": 340,
+    "cls": 0,
+    "duration": 330.5,
+    "resources": 5
+  },
+  {
+    "page": "catalog",
+    "width": 390,
+    "lcp": 160,
+    "cls": 0,
+    "duration": 130.09999999403954,
+    "resources": 5
+  },
+  {
+    "page": "search",
+    "width": 390,
+    "lcp": 104,
+    "cls": 0,
+    "duration": 82.5,
+    "resources": 5
+  },
+  {
+    "page": "product",
+    "width": 390,
+    "lcp": 104,
+    "cls": 0
+  }
+]

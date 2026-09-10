@@ -9,6 +9,8 @@ from decimal import Decimal, InvalidOperation
 import re
 import os
 import tempfile
+from django.core.exceptions import PermissionDenied
+from .importing import import_xlsx, ImportValidationError
 
 from openpyxl import Workbook, load_workbook
 
@@ -270,6 +272,7 @@ delete_all_products_fast.short_description = "⚡ БЫСТРО удалить В
 # ── Формы ─────────────────────────────────────
 
 class ExcelImportForm(forms.Form):
+    dry_run = forms.BooleanField(label='Только проверить, без записи в БД', required=False, initial=True)
     file = forms.FileField(
         label="Excel файл (.xlsx)",
         help_text="Максимальный размер файла: 200 MB",
@@ -464,7 +467,6 @@ class ProductAdmin(admin.ModelAdmin):
         export_products_to_excel,
         delete_products_in_batches,
         delete_all_products,
-        delete_all_products_fast,
     ]
     change_list_template = "admin/products_changelist.html"
 
@@ -488,6 +490,8 @@ class ProductAdmin(admin.ModelAdmin):
 
     def delete_all_view(self, request):
         """Страница подтверждения полного удаления товаров."""
+        if not self.has_delete_permission(request):
+            raise PermissionDenied
         if request.method == "POST":
             form = DeleteConfirmForm(request.POST)
             if form.is_valid():
@@ -535,6 +539,21 @@ class ProductAdmin(admin.ModelAdmin):
     # ── Импорт ───────────────────────────────
 
     def import_from_excel(self, request):
+        if not (self.has_add_permission(request) and self.has_change_permission(request)):
+            raise PermissionDenied
+        form = ExcelImportForm(request.POST or None, request.FILES or None)
+        if request.method == 'POST' and form.is_valid():
+            path = _save_upload_to_tmp(form.cleaned_data['file'])
+            try:
+                result = import_xlsx(path, dry_run=form.cleaned_data['dry_run'])
+                self.message_user(request, str(result), level=messages.SUCCESS)
+            except (ImportValidationError, ValueError, OSError) as error:
+                form.add_error('file', str(error))
+            finally:
+                os.unlink(path)
+        return render(request, 'admin/excel_import.html', {'form': form, 'opts': self.model._meta})
+
+    def legacy_import_from_excel(self, request):
         if request.method != "POST":
             return render(
                 request,

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{% if category %}{{ category.name }}{% elif query %}Поиск {{ query }}{% else %}Каталог подшипников{% endif %} · SBA{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="{% url 'index' %}">Главная</a> / <a href="{% url 'catalog' %}">Каталог</a>{% if category %} / {{ category.name }}{% endif %}</nav>
+<h1>{% if category %}{{ category.name }}{% elif query %}Результаты поиска «{{ query }}»{% else %}Каталог подшипников{% endif %}</h1>
+<div class="catalog-toolbar"><p>{{ page_obj.paginator.count }} предложений · Сначала дешевле</p><form method="get"><input type="hidden" name="q" value="{{ query }}"><label for="manufacturer">Производитель</label><select id="manufacturer" name="manufacturer"><option value="">Все производители</option>{% for brand in brands %}<option value="{{ brand }}" {% if manufacturer == brand %}selected{% endif %}>{{ brand }}</option>{% endfor %}</select><button type="submit" class="secondary">Применить</button></form></div>
+<table class="offers"><caption class="visually-hidden">Предложения в порядке возрастания цены. Цены по запросу в конце.</caption><thead><tr><th>Обозначение</th><th>Производитель</th><th>Цена</th><th>Наличие</th><th>Действие</th></tr></thead><tbody>
+{% for product in products %}<tr>
+<td data-label="Обозначение"><a class="designation" href="{{ product.get_absolute_url }}">{{ product.designation }}</a>{% if product.length or product.width or product.height %}<small>{{ product.length|default:"—" }} × {{ product.width|default:"—" }} × {{ product.height|default:"—" }} мм</small>{% endif %}</td>
+<td data-label="Производитель">{{ product.manufacturer|default:"Не указан" }}</td>
+<td class="price" data-label="Цена">{% if product.effective_price > 0 %}{{ product.effective_price|floatformat:2 }} ₽{% else %}<span class="muted">По запросу</span>{% endif %}</td>
+<td data-label="Наличие">{% if product.unknown_stock %}Наличие уточняйте{% elif product.total_stock > 0 %}{{ product.total_stock }} шт. свободно{% else %}Наличие уточняйте{% endif %}</td>
+<td><a class="row-action" href="{{ product.get_absolute_url }}">Подробнее<span class="visually-hidden">: {{ product.designation }}</span></a></td></tr>
+{% empty %}<tr><td colspan="5" class="empty-state">Предложения не найдены. Измените запрос или <a href="{% url 'contacts' %}">обратитесь за подбором</a>.</td></tr>{% endfor %}
+</tbody></table>
+{% if page_obj.paginator.num_pages > 1 %}<nav class="pagination-row" aria-label="Страницы каталога">{% if page_obj.has_previous %}<a href="?{{ page_query }}&page={{ page_obj.previous_page_number }}">Назад</a>{% endif %}<span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?{{ page_query }}&page={{ page_obj.next_page_number }}">Далее</a>{% endif %}</nav>{% endif %}
+{% endblock %}

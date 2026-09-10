@@ -21,6 +21,9 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    slug = models.SlugField(max_length=400, unique=True, allow_unicode=True, editable=False)
+    search_key = models.CharField(max_length=255, db_index=True, editable=False)
+    has_spaces = models.BooleanField(default=False, editable=False)
     code = models.CharField(
         max_length=100, unique=True, verbose_name="Внутренний код"
     )
@@ -67,6 +70,20 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.designation} ({self.manufacturer})"
+
+    def save(self, *args, **kwargs):
+        from .services import normalize_designation, product_slug
+        self.search_key = normalize_designation(self.designation)
+        self.has_spaces = any(c.isspace() for c in self.designation.strip())
+        if not self.slug:
+            self.slug = product_slug(self.designation, self.manufacturer, self.code)
+        if kwargs.get('update_fields'):
+            kwargs['update_fields'] = set(kwargs['update_fields']) | {'search_key', 'has_spaces', 'slug'}
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('product_canonical', args=[self.slug])
 
 
 class Warehouse(models.Model):

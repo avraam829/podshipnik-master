@@ -11,12 +11,14 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
+import tempfile
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 from pathlib import Path
 DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600   # 100 MB в байтах
 FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600   # 100 MB в байтах
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
-FILE_UPLOAD_TEMP_DIR = '/tmp'
+FILE_UPLOAD_TEMP_DIR = tempfile.gettempdir()
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,9 +34,28 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '')
 # SECURITY WARNING: don't run with debug turned on in production!
 # The default is False, but can be overridden by setting DJANGO_DEBUG=True in the .env file
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'local-development-only-not-for-production-' * 2
+    else:
+        raise ImproperlyConfigured('Set DJANGO_SECRET_KEY in the environment.')
+
+PRIMARY_DOMAIN = os.getenv('PRIMARY_DOMAIN', 'localhost:8000')
+ADDITIONAL_DOMAINS = [s.strip() for s in os.getenv('ADDITIONAL_DOMAINS', '').split(',') if s.strip()]
+SITE_URL = ('http' if DEBUG else 'https') + '://' + PRIMARY_DOMAIN
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_HSTS_SECONDS = 0 if DEBUG else 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+if os.getenv('TRUST_PROXY', 'False') == 'True':
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ALLOWED_HOSTS_str = os.getenv('DJANGO_ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_str.split(',') if host.strip()]
+ALLOWED_HOSTS += [PRIMARY_DOMAIN.split(':')[0], *ADDITIONAL_DOMAINS]
 
 if DEBUG:
     ALLOWED_HOSTS.append('127.0.0.1')
@@ -51,6 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
 
     'catalog',
     'users',
@@ -59,6 +81,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'config.middleware.SiteMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,6 +104,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'catalog.context_processors.categories',
+                'catalog.context_processors.seo',
                 'cart.context_processors.cart',
             ],
         },
@@ -96,7 +120,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.getenv('DATABASE_PATH', str(BASE_DIR / 'db.sqlite3')),
+        'OPTIONS': {'timeout': 30},
     }
 }
 
@@ -123,9 +148,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
