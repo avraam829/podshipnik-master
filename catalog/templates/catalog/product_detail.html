@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.designation }} — {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="detail-card">
+
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Каталог</a></li>
+            {% if product.category %}
+                {% if product.category.parent %}
+                <li class="breadcrumb-item">
+                    <a href="{% url 'category' product.category.parent.id %}">{{ product.category.parent.name }}</a>
+                </li>
+                {% endif %}
+                <li class="breadcrumb-item">
+                    <a href="{% url 'category' product.category.id %}">{{ product.category.name }}</a>
+                </li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ product.designation }}</li>
+        </ol>
+    </nav>
+
+    <h1>{{ product.designation }}</h1>
+    {% if product.manufacturer %}
+        <p class="manufacturer">{{ product.manufacturer }}</p>
+    {% endif %}
+
+    <div class="row mt-4">
+
+        <!-- ── Наличие ── -->
+        <div class="col-md-6 mb-3">
+            <div class="detail-section-label">Наличие</div>
+            {% if total_amount > 0 %}
+                <div class="stock-badge in-stock">
+                    {{ total_amount }}&nbsp;шт. в наличии
+                    {% if total_free != total_amount %}
+                        &nbsp;/&nbsp;свободно {{ total_free }}&nbsp;шт.
+                    {% endif %}
+                </div>
+                {% if stocks|length > 1 %}
+                <ul style="list-style:none;padding:0;margin:10px 0 0;font-size:13px;color:var(--gray-500);">
+                    {% for s in stocks %}
+                    <li style="padding:3px 0;">{{ s.warehouse.name }}: {{ s.amount }}&nbsp;шт.</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% else %}
+                <div class="stock-badge out-of-stock">Под заказ</div>
+            {% endif %}
+        </div>
+
+        <!-- ── Цена ── -->
+        <div class="col-md-6 mb-3">
+            <div class="detail-section-label">Цена</div>
+            {% if product.price > 0 %}
+                <p class="detail-price">{{ product.price|floatformat:2 }}&nbsp;&#8381;</p>
+            {% else %}
+                <p style="color:var(--gray-500);font-size:16px;font-weight:500;">Цена по запросу</p>
+            {% endif %}
+
+            {% for p in prices %}
+                {% if p.price_type == "wholesale" and p.price %}
+                <p style="color:var(--gray-400);font-size:13px;margin-top:4px;">
+                    Опт: {{ p.price|floatformat:2 }}&nbsp;&#8381;
+                </p>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ── Корзина ── -->
+    <form action="{% url 'cart_add' product.id %}" method="post"
+          class="d-flex align-items-center mt-2 mb-4">
+        {% csrf_token %}
+        <input type="number" name="quantity" class="detail-qty" value="1" min="1">
+        <button type="submit" class="btn-cart-lg ms-3">Добавить в корзину</button>
+    </form>
+
+    <!-- ── Характеристики ── -->
+    {% if product.weight or product.length or product.width or product.height %}
+    <div class="mt-4 pt-4" style="border-top:1px solid var(--gray-100);">
+        <div class="detail-section-label">Характеристики</div>
+        <table class="specs-table">
+            {% if product.code %}
+            <tr><td>Артикул</td><td>{{ product.code }}</td></tr>
+            {% endif %}
+            {% if product.manufacturer %}
+            <tr><td>Производитель</td><td>{{ product.manufacturer }}</td></tr>
+            {% endif %}
+            {% if product.weight %}
+            <tr><td>Вес</td><td>{{ product.weight }} кг</td></tr>
+            {% endif %}
+            {% if product.length or product.width or product.height %}
+            <tr>
+                <td>Габариты (Д×Ш×В)</td>
+                <td>
+                    {{ product.length|default:"—" }} ×
+                    {{ product.width|default:"—" }} ×
+                    {{ product.height|default:"—" }} мм
+                </td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- ── Описание (без обрезки) ── -->
+    <div class="mt-4 pt-4" style="border-top:1px solid var(--gray-100);">
+        <div class="detail-section-label">Описание</div>
+        {% if product.description %}
+            <div class="detail-description">{{ product.description|linebreaks }}</div>
+        {% else %}
+            <p style="color:var(--gray-400);font-size:14px;">Описание отсутствует</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

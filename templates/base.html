@@ -1,0 +1,234 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Информационный ресурс импортных подшипников{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Подшипники и промышленные комплектующие{% endblock %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+    <div class="header-topbar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{% url 'contacts' %}">Контакты</a>
+                </div>
+                <div>
+                    {% if user.is_authenticated %}
+                        <span class="user-name">{{ user.username }}</span>
+                        <span class="separator">|</span>
+                        <a href="{% url 'logout' %}">Выйти</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">Войти</a>
+                        <span class="separator">|</span>
+                        <a href="{% url 'register' %}">Регистрация</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-main">
+        <div class="container">
+            <div class="row align-items-center gy-2">
+
+                <!-- Лого -->
+                <div class="col-6 col-md-2">
+                    <a class="logo" href="/">
+                        <span class="logo-icon">DO</span>
+                        <span class="d-none d-sm-inline">Demo Oil</span>
+                    </a>
+                </div>
+
+                <!-- Поиск -->
+                <div class="col-12 col-md-6 order-3 order-md-2">
+                    <div class="search-wrap" id="search-container">
+                        <form id="search-form" action="/search/">
+                            <input class="search-input" id="search-input" type="search" name="q"
+                                   placeholder="Артикул, маркировка, производитель…" autocomplete="off">
+                            <button class="search-btn" type="submit">Найти</button>
+                        </form>
+                        <div id="suggestions-box"></div>
+                    </div>
+                </div>
+
+                <!-- Корзина + язык -->
+                <div class="col-6 col-md-4 order-2 order-md-3">
+                    <div class="header-actions">
+                        <div class="dropdown">
+                            <button class="btn-lang dropdown-toggle" type="button"
+                                    id="languageCurrencyDropdown" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                RU / ₽
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end"
+                                aria-labelledby="languageCurrencyDropdown">
+                                <li><a class="dropdown-item" href="#">EN / USD</a></li>
+                            </ul>
+                        </div>
+                        <a href="{% url 'cart_detail' %}" class="cart-icon-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                            </svg>
+                            {% if cart|length > 0 %}
+                                <span class="cart-count">{{ cart|length }}</span>
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ═══ MAIN ═══ -->
+<div class="container mt-4 mb-5 main-container">
+
+    {% if messages %}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="sidebar-heading">Каталог</div>
+            <div class="accordion cat-accordion" id="catalog-accordion">
+                {% for category in categories %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-{{ category.id }}">
+                        <button class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapse-{{ category.id }}"
+                                aria-expanded="false"
+                                aria-controls="collapse-{{ category.id }}">
+                            <span class="category-name">{{ category.name }}</span>
+                            <span class="cat-badge ms-2">{{ category.total_product_count }}</span>
+                        </button>
+                    </h2>
+                    <div id="collapse-{{ category.id }}" class="accordion-collapse collapse"
+                         aria-labelledby="heading-{{ category.id }}"
+                         data-bs-parent="#catalog-accordion">
+                        <div class="accordion-body">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'category' category.id %}"
+                                   class="list-group-item list-group-item-action">
+                                    Все товары ({{ category.total_product_count }})
+                                </a>
+                                {% for child in category.children_list %}
+                                <a href="{% url 'category' child.id %}"
+                                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <span class="category-name">{{ child.name }}</span>
+                                    <span class="cat-badge">{{ child.product_count }}</span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color:var(--gray-400);font-size:13px;padding:12px;">Категории не добавлены</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="col-md-9">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+    <div class="container">
+        <small>Demo Oil &copy; {% now "Y" %} — Подшипники и промышленные комплектующие</small>
+    </div>
+</footer>
+
+<a id="back-to-top" href="#">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+    </svg>
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var inp = document.getElementById('search-input');
+    var box = document.getElementById('suggestions-box');
+    var timer;
+
+    inp.addEventListener('keyup', function(e) {
+        var q = e.target.value.trim();
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            if (q.length > 1) {
+                fetch('/api/search-suggestions/?q=' + encodeURIComponent(q))
+                    .then(function(r) { return r.json(); })
+                    .then(function(d) { show(d.suggestions); })
+                    .catch(function(e) { console.error(e); });
+            } else {
+                box.innerHTML = '';
+                box.style.display = 'none';
+            }
+        }, 200);
+    });
+
+    function show(items) {
+        if (!items.length) { box.style.display = 'none'; return; }
+        var h = '<ul class="list-group">';
+        items.forEach(function(it) {
+            h += '<a href="' + it.url + '" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">';
+            h += '<div>';
+            h += '<div>' + it.designation + '</div>';
+            h += '<small class="text-muted">' + (it.manufacturer || '') + '</small>';
+            h += '</div>';
+            if (it.price) {
+                h += '<span class="badge bg-primary ms-2">' + it.price + ' ₽</span>';
+            }
+            h += '</a>';
+        });
+        h += '</ul>';
+        box.innerHTML = h;
+        box.style.display = 'block';
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#search-container')) {
+            box.innerHTML = '';
+            box.style.display = 'none';
+        }
+    });
+
+    var top_btn = document.getElementById('back-to-top');
+    window.addEventListener('scroll', function() {
+        top_btn.style.display = window.pageYOffset > 300 ? 'flex' : 'none';
+    });
+    top_btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+</script>
+</body>
+</html>

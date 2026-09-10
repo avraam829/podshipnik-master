@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+.venv/
+*.egg
+*.egg-info/
+.env
+
+# Django
+*.log
+*.sqlite3
+*.sqlite3.bak
+/media
+/static_collected
+
+# OS generated files
+.DS_Store
+.Trashes
+Thumbs.db
+
+.npm-cache/
+.agents/
+.impeccable/
+.playwright/
+*.xlsx
+*.db
+.env.*
+!.env.example
+staticfiles/
+

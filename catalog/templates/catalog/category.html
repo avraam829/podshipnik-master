@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} — {{ block.super }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'index' %}">Каталог</a></li>
+        {% if category.parent %}
+        <li class="breadcrumb-item">
+            <a href="{% url 'category' category.parent.id %}">{{ category.parent.name }}</a>
+        </li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+    </ol>
+</nav>
+
+<h1 class="page-title">{{ category.name }}</h1>
+{% if page_obj %}
+<p class="page-subtitle mb-4">
+    Товаров: {{ page_obj.paginator.count }}
+    &nbsp;·&nbsp; Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+</p>
+{% endif %}
+
+{% if subcategories %}
+<div class="section-label">Подкатегории</div>
+<div class="subcat-chips">
+    {% for sub in subcategories %}
+    <a href="{% url 'category' sub.id %}" class="subcat-chip">{{ sub.name }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="product-grid">
+    {% for product in products %}
+    <div class="p-card">
+        {% if product.total_stock > 0 %}
+            <div class="p-card-stock in-stock">В наличии — {{ product.total_stock }} шт.</div>
+        {% else %}
+            <div class="p-card-stock out-of-stock">Под заказ</div>
+        {% endif %}
+
+        <div class="p-card-title">
+            <a href="{% url 'product_detail' product.id %}">{{ product.designation }}</a>
+        </div>
+        <div class="p-card-manufacturer">{{ product.manufacturer|default:"" }}</div>
+
+        <div class="p-card-bottom">
+            <span class="p-card-price">
+                {% if product.price > 0 %}
+                    {{ product.price|floatformat:2 }}&nbsp;&#8381;
+                {% else %}
+                    <span class="no-price">По запросу</span>
+                {% endif %}
+            </span>
+            <form action="{% url 'cart_add' product.id %}" method="post" class="p-card-actions">
+                {% csrf_token %}
+                <input type="number" name="quantity" class="qty-input" value="1" min="1">
+                <button type="submit" class="btn-cart">В корзину</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1;">
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+            <p>В этой категории пока нет товаров</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<div class="pagination-wrap">
+    {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo;</a>
+        <a href="?page={{ page_obj.previous_page_number }}">&lsaquo;</a>
+    {% else %}
+        <span class="disabled">&laquo;</span>
+        <span class="disabled">&lsaquo;</span>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+        {% elif num > page_obj.number|add:"-4" and num < page_obj.number|add:"4" %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% elif num == page_obj.number|add:"-4" or num == page_obj.number|add:"4" %}
+            <span class="ellipsis">…</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">&rsaquo;</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+    {% else %}
+        <span class="disabled">&rsaquo;</span>
+        <span class="disabled">&raquo;</span>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

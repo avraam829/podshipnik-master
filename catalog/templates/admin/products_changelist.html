@@ -1,0 +1,28 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    
+    <li>
+        <a href="import-excel/" class="addlink">
+            📥 Импорт из Excel
+        </a>
+    </li>
+    
+    <li>
+        <a href="delete-all/" class="deletelink" 
+           onclick="return confirm('Вы уверены? Это удалит ВСЕ товары!');">
+            🗑️ Удалить ВСЕ товары
+        </a>
+    </li>
+{% endblock %}
+
+{% block content %}
+    <div style="background: #393834; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ffe58f;">
+        <strong>💡 Совет:</strong> Для массового удаления используйте action 
+        <em>"🗑️ Удалить выбранные (пакетно)"</em> из выпадающего списка действий, 
+        или кнопку <em>"Удалить ВСЕ товары"</em> выше.
+    </div>
+    {{ block.super }}
+{% endblock %}
