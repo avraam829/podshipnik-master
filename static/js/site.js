@@ -30,7 +30,12 @@ input.addEventListener('input', () => {
 input.addEventListener('keydown', event => {
   if (event.key === 'ArrowDown' && !box.hidden) { event.preventDefault(); box.firstElementChild?.focus(); }
 });
-document.addEventListener('keydown', event => { if(event.key === 'Escape') { closeSuggestions(); input.focus(); } });
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && event.target.closest('#search-container')) {
+    ++sequence; clearTimeout(timer); controller?.abort();
+    closeSuggestions(); status.textContent = ''; input.focus();
+  }
+});
 document.addEventListener('click', event => { if(!event.target.closest('#search-container')) { ++sequence; controller?.abort(); closeSuggestions(); } });
 const categories = document.querySelector('.category-nav');
 if (matchMedia('(max-width:767px)').matches) categories.open = false;

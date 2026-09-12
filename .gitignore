@@ -32,3 +32,8 @@ Thumbs.db
 !.env.example
 staticfiles/
 
+
+.baseline/
+.venv-wsl/
+backups/
+

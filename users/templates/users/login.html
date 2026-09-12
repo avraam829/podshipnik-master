@@ -1,14 +1,10 @@
 {% extends "base.html" %}
-
-{% block title %}Вход - {{ block.super }}{% endblock %}
-
+{% load static %}
+{% block title %}Вход | SBA{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/account.css' %}">{% endblock %}
 {% block content %}
-<div class="container">
-    <h1 class="mt-4">Вход</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-warning">Войти</button>
-    </form>
-</div>
+<section class="auth-page"><div class="auth-card"><p class="eyebrow">Личный кабинет</p><h1>Вход</h1><p class="page-intro">Просматривайте свои заявки и оформляйте новые.</p>
+{% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+<form class="account-form" method="post" novalidate>{% csrf_token %}{% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}{% for field in form.visible_fields %}<div class="field-group"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}</div>{% endfor %}<button type="submit">Войти</button></form>
+<p class="auth-switch">Нет аккаунта? <a href="{% url 'register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Зарегистрироваться</a></p></div></section>
 {% endblock %}

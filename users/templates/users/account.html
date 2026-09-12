@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Личный кабинет | SBA{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/account.css' %}">{% endblock %}
+{% block content %}
+<section class="account-page"><p class="eyebrow">Личный кабинет</p><h1>Здравствуйте, {{ user.first_name|default:user.username }}</h1>
+<div class="account-layout"><form class="account-form profile-form" method="post" novalidate>{% csrf_token %}<h2>Контактные данные</h2>{% for field in form %}<div class="field-group"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}</div>{% endfor %}<button type="submit">Сохранить</button></form>
+<section class="orders-section" aria-labelledby="orders-title"><div class="section-heading"><h2 id="orders-title">Мои заявки</h2><a href="{% url 'cart_detail' %}">Корзина</a></div>{% for order in orders %}<article class="order-card"><div><p class="order-number">Заявка №{{ order.pk }}</p><p class="muted">{{ order.created|date:"d.m.Y, H:i" }}</p></div><div><span class="status status-{{ order.status }}">{{ order.get_status_display }}</span>{% if order.availability_to_clarify %}<p class="order-note">Наличие уточняется</p>{% endif %}</div><p class="order-items">{% for item in order.items.all %}{{ item.designation|default:item.product.designation }} × {{ item.quantity }}{% if not forloop.last %}; {% endif %}{% endfor %}</p><a href="{% url 'order_confirmation' order.pk %}">Открыть заявку</a></article>{% empty %}<div class="empty-account"><p>Заявок пока нет.</p><a class="button" href="{% url 'catalog' %}">Перейти в каталог</a></div>{% endfor %}</section></div></section>
+{% endblock %}

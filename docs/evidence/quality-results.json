@@ -1,0 +1,140 @@
+[
+  {
+    "version": "baseline",
+    "page": "home",
+    "width": 1440,
+    "lcp_median_ms": 116,
+    "cls_max": 0,
+    "resource_bytes": 26337,
+    "requests": 5,
+    "interaction_events_ms": []
+  },
+  {
+    "version": "baseline",
+    "page": "catalog",
+    "width": 1440,
+    "lcp_median_ms": 420,
+    "cls_max": 0,
+    "resource_bytes": 26337,
+    "requests": 5,
+    "interaction_events_ms": [
+      16,
+      16,
+      16
+    ]
+  },
+  {
+    "version": "baseline",
+    "page": "product",
+    "width": 1440,
+    "lcp_median_ms": 164,
+    "cls_max": 0,
+    "resource_bytes": 26337,
+    "requests": 5,
+    "interaction_events_ms": []
+  },
+  {
+    "version": "baseline",
+    "page": "home",
+    "width": 390,
+    "lcp_median_ms": 124,
+    "cls_max": 0,
+    "resource_bytes": 26337,
+    "requests": 5,
+    "interaction_events_ms": [
+      16,
+      16,
+      16
+    ]
+  },
+  {
+    "version": "baseline",
+    "page": "catalog",
+    "width": 390,
+    "lcp_median_ms": 228,
+    "cls_max": 0,
+    "resource_bytes": 26337,
+    "requests": 5,
+    "interaction_events_ms": []
+  },
+  {
+    "version": "baseline",
+    "page": "product",
+    "width": 390,
+    "lcp_median_ms": 128,
+    "cls_max": 0,
+    "resource_bytes": 26337,
+    "requests": 5,
+    "interaction_events_ms": []
+  },
+  {
+    "version": "final",
+    "page": "home",
+    "width": 1440,
+    "lcp_median_ms": 84,
+    "cls_max": 0,
+    "resource_bytes": 243381,
+    "requests": 5,
+    "interaction_events_ms": [],
+    "axe_violations": []
+  },
+  {
+    "version": "final",
+    "page": "catalog",
+    "width": 1440,
+    "lcp_median_ms": 148,
+    "cls_max": 0,
+    "resource_bytes": 243381,
+    "requests": 5,
+    "interaction_events_ms": [],
+    "axe_violations": []
+  },
+  {
+    "version": "final",
+    "page": "product",
+    "width": 1440,
+    "lcp_median_ms": 80,
+    "cls_max": 0,
+    "resource_bytes": 243381,
+    "requests": 5,
+    "interaction_events_ms": [],
+    "axe_violations": []
+  },
+  {
+    "version": "final",
+    "page": "home",
+    "width": 390,
+    "lcp_median_ms": 68,
+    "cls_max": 0,
+    "resource_bytes": 243381,
+    "requests": 5,
+    "interaction_events_ms": [],
+    "axe_violations": []
+  },
+  {
+    "version": "final",
+    "page": "catalog",
+    "width": 390,
+    "lcp_median_ms": 144,
+    "cls_max": 0,
+    "resource_bytes": 243381,
+    "requests": 5,
+    "interaction_events_ms": [],
+    "axe_violations": []
+  },
+  {
+    "version": "final",
+    "page": "product",
+    "width": 390,
+    "lcp_median_ms": 80,
+    "cls_max": 0,
+    "resource_bytes": 243381,
+    "requests": 5,
+    "interaction_events_ms": [
+      16,
+      16,
+      16
+    ],
+    "axe_violations": []
+  }
+]

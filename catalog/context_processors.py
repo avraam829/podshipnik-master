@@ -3,13 +3,16 @@ from .models import Category
 
 
 def seo(request):
+    import json
     from django.conf import settings
     from urllib.parse import urlencode
     path = request.path
     page = request.GET.get('page', '')
     if page.isdigit() and int(page) > 1 and path.startswith(('/catalog/', '/category/')):
         path += '?' + urlencode({'page': int(page)})
-    return {'canonical_url': settings.SITE_URL + path, 'site_url': settings.SITE_URL}
+    organization = {'@context': 'https://schema.org', '@type': 'Organization', 'name': 'SBA', 'url': settings.SITE_URL, 'email': '9857277106@mail.ru'}
+    return {'canonical_url': settings.SITE_URL + path, 'site_url': settings.SITE_URL,
+            'organization_json': json.dumps(organization).replace('<', '\\u003c')}
 
 
 def categories(request):

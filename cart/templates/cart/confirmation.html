@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Заявка №{{ order.pk }} | SBA{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/account.css' %}">{% endblock %}
+{% block content %}
+<section class="account-page confirmation-page">
+    <p class="eyebrow">Заявка принята</p>
+    <h1>Заявка №{{ order.pk }} сохранена</h1>
+    <p class="page-intro">Мы получили состав и контакты. Менеджер уточнит цену, наличие и условия поставки.</p>
+    <div class="confirmation-card">
+        <dl class="order-meta"><dt>Статус</dt><dd><span class="status status-{{ order.status }}">{{ order.get_status_display }}</span></dd><dt>Дата</dt><dd>{{ order.created|date:"d.m.Y, H:i" }}</dd><dt>Контакт</dt><dd>{{ order.contact_name }}{% if order.company %}, {{ order.company }}{% endif %}</dd><dt>Email</dt><dd>{{ order.email }}</dd></dl>
+        <ul class="order-lines">{% for item in order.items.all %}<li><span>{{ item.designation|default:item.product.designation }} × {{ item.quantity }}</span><strong>{% if item.price > 0 %}{{ item.get_cost|floatformat:2 }} ₽{% else %}По запросу{% endif %}</strong></li>{% endfor %}</ul>
+        <p class="order-total">Известная стоимость <strong>{% if order.get_total_cost > 0 %}{{ order.get_total_cost|floatformat:2 }} ₽{% else %}По запросу{% endif %}</strong></p>
+        {% if order.availability_to_clarify %}<p class="order-note">Наличие по заявке требует уточнения.</p>{% endif %}
+    </div>
+    <p><a class="button" href="{% url 'account' %}">Перейти в личный кабинет</a> <a class="back-link" href="{% url 'catalog' %}">Вернуться в каталог</a></p>
+</section>
+{% endblock %}

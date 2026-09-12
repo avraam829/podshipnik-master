@@ -1,5 +1,7 @@
 """Browser regression + repeatable local lab measurements, not field CWV."""
 import json
+import re
+from decimal import Decimal
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -25,6 +27,10 @@ with sync_playwright() as playwright:
         assert links.count()>0
         labels=links.all_text_contents()
         assert '7212BEP SKF' in labels[0],labels[:3]
+        prices=page.locator('.offers .price').all_text_contents()
+        numeric=[Decimal(re.sub(r'[^0-9,.-]', '', price).replace(',', '.')) for price in prices if 'По запросу' not in price]
+        assert numeric==sorted(numeric),prices
+        assert all('По запросу' in price for price in prices[len(numeric):]),prices
         url=links.first.get_attribute('href')
         links.first.click()
         page.wait_for_load_state('networkidle')
@@ -40,6 +46,14 @@ with sync_playwright() as playwright:
         page.get_by_role('button',name='Найти',exact=True).click()
         page.wait_for_load_state('networkidle')
         assert page.locator('.designation').count()>0
+        input=page.locator('#search-input')
+        input.fill('7212B')
+        input.press('Escape')
+        page.wait_for_timeout(400)
+        assert page.locator('#suggestions-box').is_hidden()
+        page.locator('h1').evaluate('(element)=>{element.tabIndex=-1;element.focus()}')
+        page.keyboard.press('Escape')
+        assert page.locator('h1').evaluate('(element)=>document.activeElement===element')
         assert not errors,errors
         page.close()
     browser.close()

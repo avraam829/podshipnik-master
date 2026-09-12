@@ -1,0 +1,111 @@
+{
+  "qa_username": "qa_ea21da04fd59",
+  "checks": [
+    {
+      "page": "login",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "page": "login",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "page": "login",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "page": "register",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "page": "register",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "page": "register",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "page": "account-empty",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "page": "account-empty",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "page": "account-empty",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "page": "cart",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "page": "cart",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "page": "cart",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "page": "checkout",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "page": "checkout",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "page": "checkout",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "page": "confirmation",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "page": "confirmation",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "page": "confirmation",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "page": "account-orders",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "page": "account-orders",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "page": "account-orders",
+      "width": 390,
+      "overflow": false
+    }
+  ],
+  "js_errors": []
+}

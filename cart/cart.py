@@ -18,10 +18,19 @@ class Cart:
         self.cart[key] = {'quantity': total}
         self.save()
     def remove(self, product):
-        self.cart.pop(str(product.pk), None)
+        self.remove_by_id(product.pk)
+
+    def remove_by_id(self, product_id):
+        self.cart.pop(str(product_id), None)
         self.save()
     def __iter__(self):
-        for product in catalog_queryset().filter(pk__in=self.cart):
+        products = list(catalog_queryset().filter(pk__in=self.cart))
+        missing = set(self.cart) - {str(product.pk) for product in products}
+        if missing:
+            for key in missing:
+                self.cart.pop(key)
+            self.save()
+        for product in products:
             quantity = self.cart[str(product.pk)]['quantity']
             price = max(product.effective_price, Decimal(0))
             yield {'product': product, 'quantity': quantity, 'price': price, 'total_price': price * quantity}

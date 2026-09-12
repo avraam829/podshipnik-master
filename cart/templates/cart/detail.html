@@ -1,8 +1,19 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Корзина | SBA{% endblock %}
-{% block content %}<h1>Ваша корзина</h1><p>Цены и наличие подтверждает менеджер. Позиции без цены рассчитываются отдельно.</p>
-<table class="offers"><thead><tr><th>Товар</th><th>Количество</th><th>Цена за шт.</th><th>Сумма</th><th>Действие</th></tr></thead><tbody>
-{% for item in cart %}<tr><td><a href="{{ item.product.get_absolute_url }}">{{ item.product.designation }}</a></td><td data-label="Количество">{{ item.quantity }}</td><td data-label="Цена">{% if item.price > 0 %}{{ item.price }} ₽{% else %}По запросу{% endif %}</td><td data-label="Сумма">{% if item.price > 0 %}{{ item.total_price }} ₽{% else %}По запросу{% endif %}</td><td><form action="{% url 'cart_remove' item.product.id %}" method="post">{% csrf_token %}<button class="secondary">Удалить<span class="visually-hidden"> {{ item.product.designation }}</span></button></form></td></tr>{% empty %}<tr><td colspan="5">Корзина пуста. <a href="{% url 'catalog' %}">Выбрать подшипник</a></td></tr>{% endfor %}</tbody></table>
-<p class="mt-4">Известная стоимость: {{ cart.get_total_price }} ₽</p>
-<form action="{% url 'order_create' %}" method="post">{% csrf_token %}<button {% if not cart %}disabled{% endif %}>Оформить заявку</button></form>
-<a class="d-inline-block mt-4" href="{% url 'catalog' %}">Продолжить выбор</a>{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/account.css' %}">{% endblock %}
+{% block content %}
+<section class="account-page">
+    <p class="eyebrow">Заявка на подбор и поставку</p>
+    <h1>Ваша корзина</h1>
+    <p class="page-intro">Цена обновляется при оформлении. Наличие и условия поставки подтвердит менеджер.</p>
+    <table class="offers account-table"><thead><tr><th>Товар</th><th>Количество</th><th>Цена за шт.</th><th>Сумма</th><th>Действие</th></tr></thead><tbody>
+    {% for item in cart %}<tr><td><a class="designation" href="{{ item.product.get_absolute_url }}">{{ item.product.designation }}</a></td><td data-label="Количество"><form class="quantity-form" action="{% url 'cart_update' item.product.id %}" method="post">{% csrf_token %}<label class="visually-hidden" for="quantity-{{ item.product.id }}">Количество для {{ item.product.designation }}</label><input id="quantity-{{ item.product.id }}" name="quantity" type="number" min="1" max="9999" value="{{ item.quantity }}"><button class="secondary" type="submit">Обновить</button></form></td><td data-label="Цена">{% if item.price > 0 %}{{ item.price }} ₽{% else %}По запросу{% endif %}</td><td data-label="Сумма">{% if item.price > 0 %}{{ item.total_price }} ₽{% else %}По запросу{% endif %}</td><td><form action="{% url 'cart_remove' item.product.id %}" method="post">{% csrf_token %}<button class="secondary">Удалить<span class="visually-hidden"> {{ item.product.designation }}</span></button></form></td></tr>{% empty %}<tr><td class="empty-state" colspan="5">Корзина пуста. <a href="{% url 'catalog' %}">Выбрать подшипник</a></td></tr>{% endfor %}</tbody></table>
+    {% if cart %}
+    <div class="checkout-summary"><p>Известная стоимость <strong>{% if cart.get_total_price > 0 %}{{ cart.get_total_price }} ₽{% else %}По запросу{% endif %}</strong></p>
+        {% if user.is_authenticated %}<a class="button" href="{% url 'checkout' %}">Перейти к оформлению</a>{% else %}<a class="button" href="{% url 'login' %}?next={% url 'checkout' %}">Войти для оформления</a>{% endif %}
+    </div>
+    {% endif %}
+    <a class="back-link" href="{% url 'catalog' %}">Продолжить выбор</a>
+</section>
+{% endblock %}

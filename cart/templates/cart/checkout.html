@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Оформление заявки | SBA{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/account.css' %}">{% endblock %}
+{% block content %}
+<section class="account-page checkout-page">
+    <p class="eyebrow">Шаг 2 из 2</p>
+    <h1>Оформление заявки</h1>
+    <p class="page-intro">Мы зафиксируем состав заявки. Оплаты на сайте нет: менеджер подтвердит цену, наличие и условия поставки.</p>
+    {% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="checkout-layout">
+        <form class="account-form" method="post" novalidate>
+            {% csrf_token %}{{ form.checkout_token }}
+            <h2>Контакты</h2>
+            {% for field in form.visible_fields %}
+            <div class="field-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span aria-hidden="true"> *</span>{% endif %}</label>
+                {{ field }}
+                {% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}
+            </div>
+            {% endfor %}
+            <p class="form-note"><span aria-hidden="true">*</span> Обязательные поля.</p>
+            <button type="submit">Отправить заявку</button>
+        </form>
+        <aside class="order-panel" aria-labelledby="order-summary-title">
+            <h2 id="order-summary-title">Состав заявки</h2>
+            <ul class="order-lines">{% for item in items %}<li><span>{{ item.product.designation }} × {{ item.quantity }}</span><strong>{% if item.price > 0 %}{{ item.price|floatformat:2 }} ₽{% else %}По запросу{% endif %}</strong></li>{% endfor %}</ul>
+            <p class="order-total">Известная стоимость <strong>{% if known_total > 0 %}{{ known_total|floatformat:2 }} ₽{% else %}По запросу{% endif %}</strong></p>
+            {% if availability_to_clarify %}<p class="order-note">По одной или нескольким позициям наличие уточняется.</p>{% endif %}
+        </aside>
+    </div>
+</section>
+{% endblock %}

@@ -147,3 +147,38 @@ class ImportTests(TestCase):
         result=import_xlsx(self.workbook([self.row(price='#VALUE!')]),False)
         self.assertEqual(len(result['warnings']),1)
         self.assertEqual(Product.objects.get().price,0)
+
+    def test_multiple_warehouses_roundtrip(self):
+        first=self.row(code='multi')
+        second=self.row(code='multi')
+        second[10]='Другой склад'
+        result=import_xlsx(self.workbook([first,second]),False)
+        self.assertEqual(result['created'],1)
+        self.assertEqual(Product.objects.count(),1)
+        self.assertEqual(Stock.objects.count(),2)
+        self.assertEqual(Price.objects.count(),1)
+
+    def test_conflicting_code_rejected(self):
+        with self.assertRaises(ImportValidationError):
+            import_xlsx(self.workbook([self.row(code='same'),self.row(code='same',price=200)]),False)
+        self.assertEqual(Product.objects.count(),0)
+
+
+@override_settings(DEBUG=True,SECURE_SSL_REDIRECT=False,ALLOWED_HOSTS=['testserver'])
+class AdminPermissionsTests(TestCase):
+    def test_staff_without_model_permissions(self):
+        from django.contrib.auth import get_user_model
+        user=get_user_model().objects.create_user(username='staff',password='test-only-pass',is_staff=True)
+        self.client.force_login(user)
+        self.assertEqual(self.client.get('/admin/catalog/product/import-excel/').status_code,403)
+        self.assertEqual(self.client.get('/admin/catalog/product/delete-all/').status_code,403)
+
+
+@override_settings(DEBUG=False,SECURE_SSL_REDIRECT=False,ALLOWED_HOSTS=['primary.example','alias.example','127.0.0.1'],PRIMARY_DOMAIN='primary.example',SITE_URL='https://primary.example')
+class DomainTests(TestCase):
+    def test_alias_preserves_path_query(self):
+        response=self.client.get('/search/?q=7212',HTTP_HOST='alias.example')
+        self.assertEqual(response.status_code,301)
+        self.assertEqual(response['Location'],'https://primary.example/search/?q=7212')
+    def test_health_does_not_redirect(self):
+        self.assertEqual(self.client.get('/health/',HTTP_HOST='127.0.0.1').status_code,200)

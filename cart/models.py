@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from catalog.models import Product
+import uuid
 
 class Cart(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cart')
@@ -19,8 +20,24 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_CONFIRMED = "confirmed"
+    STATUS_CANCELLED = "cancelled"
+    STATUS_CHOICES = (
+        (STATUS_PENDING, "Заявка принята"),
+        (STATUS_CONFIRMED, "Подтверждена"),
+        (STATUS_CANCELLED, "Отменена"),
+    )
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders', verbose_name="Пользователь")
     email = models.EmailField(verbose_name="Email")
+    contact_name = models.CharField(max_length=150, blank=True, default="", verbose_name="Контактное лицо")
+    phone = models.CharField(max_length=32, blank=True, default="", verbose_name="Телефон")
+    company = models.CharField(max_length=255, blank=True, default="", verbose_name="Компания")
+    comment = models.TextField(blank=True, default="", verbose_name="Комментарий")
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_PENDING, verbose_name="Статус")
+    availability_to_clarify = models.BooleanField(default=False, verbose_name="Наличие требует уточнения")
+    idempotency_key = models.UUIDField(null=True, blank=True, unique=True, default=None, editable=False)
     created = models.DateTimeField(auto_now_add=True, verbose_name="Создан")
     updated = models.DateTimeField(auto_now=True, verbose_name="Обновлен")
     paid = models.BooleanField(default=False, verbose_name="Оплачен")
@@ -39,7 +56,9 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name="Заказ")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Товар")
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, verbose_name="Товар")
+    designation = models.CharField(max_length=255, blank=True, default="", verbose_name="Обозначение на момент заявки")
+    product_code = models.CharField(max_length=100, blank=True, default="", verbose_name="Код товара на момент заявки")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
     quantity = models.PositiveIntegerField(default=1, verbose_name="Количество")
 

@@ -1,0 +1,77 @@
+{
+    "schema_version":  1,
+    "mode":  "balanced",
+    "risk":  "high",
+    "revision":  "worktree:in-progress-20260912",
+    "parent":  {
+                   "unconfirmed_disclosure":  "Exact parent and realized delegate settings unobservable; preserved current parent settings. Native collaboration schema exposes model, effort and fork_turns.",
+                   "routing_proof_required":  false,
+                   "agent_id":  "/root",
+                   "requested_model":  "gpt-6-astra",
+                   "requested_effort":  "preserve-user-setting-unobservable"
+               },
+    "work":  [
+                 {
+                     "agent_id":  "/root/account_checkout",
+                     "id":  "account_checkout",
+                     "dispatch_source":  "collaboration.spawn_agent native schema fork_turns none",
+                     "requested_model":  "gpt-5.6-terra",
+                     "required":  true,
+                     "fresh_context":  true,
+                     "depends_on":  [
+
+                                    ],
+                     "routing_proof_required":  false,
+                     "kind":  "implementation",
+                     "status":  "active",
+                     "unconfirmed_disclosure":  "Realized model settings unobservable",
+                     "roles":  [
+                                   "worker",
+                                   "tester"
+                               ],
+                     "read_only":  false,
+                     "ownership":  [
+                                       "users",
+                                       "cart",
+                                       "static/css/account.css"
+                                   ],
+                     "requested_effort":  "high"
+                 },
+                 {
+                     "agent_id":  "/root/excel_import",
+                     "id":  "excel_import",
+                     "dispatch_source":  "collaboration.spawn_agent native schema fork_turns none",
+                     "requested_model":  "gpt-5.6-terra",
+                     "required":  true,
+                     "fresh_context":  true,
+                     "depends_on":  [
+
+                                    ],
+                     "routing_proof_required":  false,
+                     "kind":  "implementation",
+                     "status":  "completed",
+                     "unconfirmed_disclosure":  "Realized model settings unobservable",
+                     "roles":  [
+                                   "worker",
+                                   "tester"
+                               ],
+                     "read_only":  false,
+                     "ownership":  [
+                                       "catalog/importing.py",
+                                       "catalog/admin.py",
+                                       "catalog/templates/admin",
+                                       "catalog/management/commands/import_catalog.py",
+                                       "catalog/test_import_workflow.py",
+                                       "docs/IMPORT.md"
+                                   ],
+                     "requested_effort":  "high",
+                     "evidence":  "9 importer regression tests and Django check passed; parent requested warehouse correction completed."
+                 }
+             ],
+    "budget":  {
+                   "reviews":  2,
+                   "corrections":  2,
+                   "dispatches":  5
+               },
+    "parent_corrections":  0
+}

@@ -1,8 +1,7 @@
 """Catalog identity, search and numeric ordering, shared by all web queries."""
-import re
 import unicodedata
 from decimal import Decimal, InvalidOperation
-from django.db.models import Case, When, Value, IntegerField, F, Sum, OuterRef, Subquery
+from django.db.models import Case, When, Value, IntegerField, DecimalField, F, Sum, OuterRef, Subquery
 from django.db.models.functions import Coalesce
 from django.utils.text import slugify
 
@@ -24,7 +23,7 @@ def offer_sort_key(product):
     price = numeric_price(product.price)
     name = product.designation
     return (price is None, price or Decimal(0), any(c.isspace() for c in name.strip()),
-            normalize_designation(name), product.manufacturer.casefold(), product.code)
+            normalize_designation(name), product.manufacturer, product.code)
 
 
 def product_slug(designation, manufacturer, code):
@@ -50,4 +49,5 @@ def catalog_queryset():
 def ordered_products(queryset):
     return queryset.annotate(
         missing_price=Case(When(effective_price__gt=0, then=Value(0)), default=Value(1), output_field=IntegerField()),
-    ).order_by('missing_price', 'effective_price', 'has_spaces', 'search_key', 'manufacturer', 'code')
+        price_order=Case(When(effective_price__gt=0, then=F('effective_price')), default=Value(0), output_field=DecimalField(max_digits=10,decimal_places=2)),
+    ).order_by('missing_price', 'price_order', 'has_spaces', 'search_key', 'manufacturer', 'code')

@@ -1,0 +1,8 @@
+{
+  "products": 18438,
+  "original_columns_unchanged": true,
+  "unique_slugs": 18438,
+  "empty_slugs": 0,
+  "roundtrip": true,
+  "source": "db.sqlite3"
+}

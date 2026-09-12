@@ -1,0 +1,33 @@
+services:
+  web:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_PATH: /data/db.sqlite3
+      DJANGO_ALLOWED_HOSTS: "127.0.0.1,localhost,${PRIMARY_DOMAIN:-localhost}"
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8000}:8000"
+    volumes:
+      - database:/data
+    restart: unless-stopped
+  proxy:
+    image: caddy:2
+    profiles: [production]
+    environment:
+      PRIMARY_DOMAIN: ${PRIMARY_DOMAIN:-localhost}
+      SITE_DOMAINS: ${SITE_DOMAINS:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  database:
+  caddy_data:
+  caddy_config:
