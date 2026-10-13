@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.conf import settings
 from django.urls import reverse
-from .models import Product
+from .models import Product, Category
 
 class ProductSitemap(Sitemap):
     limit = 5000
@@ -16,3 +16,11 @@ class StaticSitemap(ProductSitemap):
         return ['index', 'catalog', 'contacts']
     def location(self, item):
         return reverse(item)
+
+
+class CategorySitemap(ProductSitemap):
+    def items(self):
+        return Category.objects.order_by('pk').only('pk')
+
+    def location(self, item):
+        return reverse('category', args=[item.pk])

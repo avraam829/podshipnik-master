@@ -4,12 +4,27 @@
 Пример .env:
 ```dotenv
 PRIMARY_DOMAIN=gpz5.ru
-ADDITIONAL_DOMAINS=www.gpz5.ru
-SITE_DOMAINS=gpz5.ru,www.gpz5.ru
+ADDITIONAL_DOMAINS=www.gpz5.ru,lyhgbearing.ru,lyc-bearing.ru,hrbbrg.ru,zys-bearings.ru,lycbearings.ru,skfcn.ru
+SITE_DOMAINS=gpz5.ru,www.gpz5.ru,lyhgbearing.ru,lyc-bearing.ru,hrbbrg.ru,zys-bearings.ru,lycbearings.ru,skfcn.ru
 DJANGO_DEBUG=False
 TRUST_PROXY=True
 ```
 Caddy принимает указанные SITE_DOMAINS, автоматически получает HTTPS-сертификаты. Django разрешает PRIMARY_DOMAIN/ADDITIONAL_DOMAINS и перенаправляет алиасы на основной host с сохранением пути/query. Canonical, OpenGraph и sitemap используют основной host.
+
+Для действующего сервера после получения новой версии кода:
+
+```bash
+cd /opt/sba
+python3 scripts/configure_domains.py
+docker compose --profile production up -d --build --wait
+docker compose logs --tail=100 proxy
+```
+
+Скрипт сохраняет резервную копию `.env`, обновляет три настройки доменов,
+сохраняет остальные параметры и ранее добавленные алиасы. Секреты не выводятся.
+Важно пересоздать также proxy: `docker compose restart` не обновляет его
+переменные окружения. Дополнительные домены возвращают 301 на gpz5.ru.
+`www` для новых доменов не добавлен: для него нужны отдельные DNS-записи.
 
 DNS у провайдера:
 | Имя | Тип | Значение |

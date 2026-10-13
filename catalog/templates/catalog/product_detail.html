@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ product.designation }} — характеристики и цена | SBA{% endblock %}
+{% block title %}{{ product.designation }}{% if product.manufacturer %} · {{ product.manufacturer }}{% endif %} — характеристики и цена | SBA{% endblock %}
 {% block og_title %}{{ product.designation }} | SBA{% endblock %}
 {% block meta_description %}{{ product.designation }}{% if product.manufacturer %}, {{ product.manufacturer }}{% endif %}. {% if product.effective_price > 0 %}Цена {{ product.effective_price|floatformat:2 }} ₽.{% else %}Цена по запросу.{% endif %} Характеристики и подбор в SBA. Наличие уточняйте.{% endblock %}
 {% block structured_data %}<script type="application/ld+json">{{ schema_json|safe }}</script>{% endblock %}

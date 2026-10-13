@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{% if category %}{{ category.name }}{% elif query %}Поиск {{ query }}{% else %}Каталог подшипников{% endif %} · SBA{% endblock %}
+{% block meta_description %}{% if category %}{{ category.name }}{% else %}Каталог подшипников SBA{% endif %}. Сравнение предложений и цен, характеристики, подбор и инженерное сопровождение. Наличие и условия поставки уточняйте.{% endblock %}
 {% block content %}
 <nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="{% url 'index' %}">Главная</a> / <a href="{% url 'catalog' %}">Каталог</a>{% if category %} / {{ category.name }}{% endif %}</nav>
 <h1>{% if category %}{{ category.name }}{% elif query %}Результаты поиска «{{ query }}»{% else %}Каталог подшипников{% endif %}</h1>

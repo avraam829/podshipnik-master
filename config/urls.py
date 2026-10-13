@@ -2,8 +2,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.sitemaps.views import index, sitemap
-from catalog.sitemaps import ProductSitemap, StaticSitemap
-sitemaps = {'products': ProductSitemap, 'pages': StaticSitemap}
+from catalog.sitemaps import ProductSitemap, StaticSitemap, CategorySitemap
+sitemaps = {'products': ProductSitemap, 'pages': StaticSitemap, 'categories': CategorySitemap}
 
 urlpatterns = [
     path('sitemap.xml', index, {'sitemaps': sitemaps}, name='sitemap-index'),
