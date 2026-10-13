@@ -44,6 +44,14 @@ class ProductionDomainTests(TestCase):
                    ALLOWED_HOSTS=['testserver'], PRIMARY_DOMAIN='testserver',
                    SITE_URL='http://testserver')
 class CategorySeoTests(TestCase):
+    def test_sitemaps_have_no_exclusion_header(self):
+        for url in ['/sitemap.xml', '/sitemap-pages.xml', '/sitemap-products.xml', '/sitemap-categories.xml']:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+                self.assertNotIn('X-Robots-Tag', response.headers)
+        self.assertIn('noindex', self.client.get('/search/').headers['X-Robots-Tag'])
+
     def test_categories_in_sitemap(self):
         category = Category.objects.create(name='Precision bearings')
         self.assertContains(self.client.get('/sitemap.xml'), '/sitemap-categories.xml')

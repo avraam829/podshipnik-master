@@ -24,6 +24,12 @@ class SiteMiddleware:
                 response['Retry-After'] = '60'
                 return response
         response = self.get_response(request)
+        if request.resolver_match and request.resolver_match.url_name in (
+            'sitemap-index', 'django.contrib.sitemaps.views.sitemap',
+        ):
+            # Django's sitemap views add noindex by default. Keep sitemap feeds
+            # free of exclusion directives for search-engine submission.
+            response.headers.pop('X-Robots-Tag', None)
         if not request.path.startswith('/admin/'):
             response['Content-Security-Policy'] = "default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
         if request.path.startswith(('/users/', '/cart/', '/search/', '/api/')):
