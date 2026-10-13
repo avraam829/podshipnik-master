@@ -5,7 +5,7 @@
 ```dotenv
 PRIMARY_DOMAIN=gpz5.ru
 ADDITIONAL_DOMAINS=www.gpz5.ru,lyhgbearing.ru,lyc-bearing.ru,hrbbrg.ru,zys-bearings.ru,lycbearings.ru,skfcn.ru
-SITE_DOMAINS=gpz5.ru,www.gpz5.ru,lyhgbearing.ru,lyc-bearing.ru,hrbbrg.ru,zys-bearings.ru,lycbearings.ru,skfcn.ru
+SITE_DOMAINS=gpz5.ru, www.gpz5.ru, lyhgbearing.ru, lyc-bearing.ru, hrbbrg.ru, zys-bearings.ru, lycbearings.ru, skfcn.ru
 DJANGO_DEBUG=False
 TRUST_PROXY=True
 ```
@@ -16,6 +16,7 @@ Caddy принимает указанные SITE_DOMAINS, автоматичес
 ```bash
 cd /opt/sba
 python3 scripts/configure_domains.py
+docker compose --profile production run --rm --no-deps proxy caddy adapt --config /etc/caddy/Caddyfile --adapter caddyfile > /dev/null
 docker compose --profile production up -d --build --wait
 docker compose logs --tail=100 proxy
 ```

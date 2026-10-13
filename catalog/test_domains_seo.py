@@ -18,6 +18,9 @@ class DomainConfigTests(SimpleTestCase):
             self.assertIn('DJANGO_SECRET_KEY=unchanged\n', content)
             self.assertIn('TG_BOT_TOKEN=unchanged\n', content)
             self.assertIn('old.example', content)
+            site_domains = next(line.split('=', 1)[1] for line in content.splitlines() if line.startswith('SITE_DOMAINS='))
+            self.assertTrue(all(token.endswith(',') for token in site_domains.split()[:-1]))
+            self.assertEqual([token.rstrip(',') for token in site_domains.split()], ['gpz5.ru', *ALIASES, 'old.example'])
             for domain in ALIASES:
                 self.assertIn(domain, content)
             self.assertEqual(len(list((path.parent / 'backups').iterdir())), 1)

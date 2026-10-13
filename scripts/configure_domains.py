@@ -25,7 +25,8 @@ def configure(path):
     updates = {
         'PRIMARY_DOMAIN': 'gpz5.ru',
         'ADDITIONAL_DOMAINS': ','.join(aliases),
-        'SITE_DOMAINS': ','.join(['gpz5.ru', *aliases]),
+        # Caddy expands this as tokens, so every comma needs following whitespace.
+        'SITE_DOMAINS': ', '.join(['gpz5.ru', *aliases]),
     }
     stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     backup = path.parent / 'backups' / f'env-before-domains-{stamp}'
