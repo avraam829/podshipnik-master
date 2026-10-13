@@ -218,3 +218,36 @@ class TelegramOrderItem(models.Model):
     @property
     def subtotal(self):
         return self.price * self.quantity
+
+
+class HomePage(models.Model):
+    id = models.PositiveSmallIntegerField(primary_key=True, default=1, editable=False)
+    title = models.CharField(max_length=255, verbose_name="Заголовок главной")
+    intro = models.TextField(blank=True, verbose_name="Вступление")
+    catalog_label = models.CharField(max_length=100, default="Перейти в каталог", verbose_name="Текст кнопки каталога")
+
+    class Meta:
+        verbose_name = "Главная страница"
+        verbose_name_plural = "Главная страница"
+        constraints = [models.CheckConstraint(condition=models.Q(id=1), name="single_home_page")]
+
+    def __str__(self):
+        return "Главная страница"
+
+
+class HomePageBlock(models.Model):
+    page = models.ForeignKey(HomePage, on_delete=models.CASCADE, related_name="blocks")
+    title = models.CharField(max_length=255, verbose_name="Заголовок блока")
+    body = models.TextField(verbose_name="Текст", help_text="Обычный текст. Разделяйте абзацы пустой строкой; HTML не нужен.")
+    position = models.PositiveIntegerField(default=0, verbose_name="Порядок", help_text="Меньшее число — выше на странице.")
+    is_visible = models.BooleanField(default=True, verbose_name="Показывать")
+    highlighted = models.BooleanField(default=False, verbose_name="Выделить фоном")
+    contact_link = models.BooleanField(default=False, verbose_name="Ссылка «Обсудить задачу с нами»")
+
+    class Meta:
+        verbose_name = "Блок главной страницы"
+        verbose_name_plural = "Блоки главной страницы"
+        ordering = ["position", "pk"]
+
+    def __str__(self):
+        return self.title

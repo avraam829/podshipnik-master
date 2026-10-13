@@ -4,13 +4,17 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.core.paginator import Paginator, InvalidPage
 from django.http import JsonResponse, HttpResponse, Http404
-from .models import Category, Product
+from .models import Category, Product, HomePage
 from .services import catalog_queryset, ordered_products, normalize_designation
 
 PRODUCTS_PER_PAGE = 24
 
 def index(request):
-    return render(request, 'catalog/index.html')
+    page = HomePage.objects.filter(pk=1).first()
+    return render(request, 'catalog/index.html', {
+        'home_page': page,
+        'home_blocks': page.blocks.filter(is_visible=True) if page else [],
+    })
 
 def listing(request, category=None):
     query = request.GET.get('q', '').strip()[:120]

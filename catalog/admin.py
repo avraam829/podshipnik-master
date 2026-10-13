@@ -150,3 +150,27 @@ class ProductAdmin(admin.ModelAdmin):
         return render(request,'admin/delete_all_confirm.html',{**self.admin_site.each_context(request),
             'form':form,'opts':self.model._meta,'total_products':Product.objects.count(),
             'total_stocks':Stock.objects.count(),'total_prices':Price.objects.count()})
+
+
+from .models import HomePage, HomePageBlock
+
+
+class HomePageBlockInline(admin.StackedInline):
+    model = HomePageBlock
+    extra = 0
+    fields = ('title', 'body', ('position', 'is_visible'), ('highlighted', 'contact_link'))
+
+
+@admin.register(HomePage)
+class HomePageAdmin(admin.ModelAdmin):
+    fields = ('title', 'intro', 'catalog_label')
+    inlines = [HomePageBlockInline]
+
+    def has_add_permission(self, request):
+        return super().has_add_permission(request) and not HomePage.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def view_on_site(self, obj):
+        return '/'

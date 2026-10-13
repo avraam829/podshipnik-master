@@ -1,9 +1,18 @@
 {% extends "base.html" %}
 {% block title %}SBA · Подбор подшипников и инженерное сопровождение{% endblock %}
 {% block content %}
-<section class="home-intro"><h1>Подшипники.<br>Подбор и сопровождение.</h1><p class="lead">Инженерные решения для эксплуатации и ремонта оборудования.</p><a class="button" href="{% url 'catalog' %}">Перейти в каталог</a></section>
-<section class="editorial-section"><h2>Подбор и замена</h2><div class="prose"><p>Сопровождение по эксплуатации и подбору подшипников (специализация: бренды SKF, FAG, INA, NSK, NTN, KOYO, SLF, BOSCH-Rexroth и высокотехнологичные аналоги). Альтернативные решения уровня SKF. Замена дефицитных европейских серий без потери надежности эксплуатации оборудования.</p><p>Если вам нужна помощь в выборе оптимальных продуктов для вашего конкретного применения, помните, что наша компания предоставляет услуги по проектированию и технической поддержке в рамках наших дополнительных услуг, которые значительно облегчат вашу работу!</p></div></section>
-<section class="editorial-section"><h2>Инженерное сопровождение</h2><div class="prose"><p>Наша команда инженеров по подшипникам готова предоставить консультации по монтажу подшипников, корпусных узлов на оборудовании, где есть проблемные места. Диагностика и поиск причин неисправности оборудования.</p><p>Обеспечение резервов под ваши плановые закупки подшипников для сокращения сроков поставок.</p></div></section>
-<section class="warranty"><h2>SBA гарантийная политика</h2><dl><dt>12 месяцев</dt><dd>Базовая гарантия.</dd><dt>36 месяцев</dt><dd>Расширенная гарантия действует при выполнении пусконаладочных работ нашими квалифицированными инженерами по отдельному договору. Стоимость услуг шеф-монтажа рассчитывается индивидуально.</dd></dl></section>
-<section class="editorial-section"><h2>Точность всего узла</h2><div class="prose"><p>Для достижения высокой точности вращения необходимо, чтобы те же высокие стандарты точности и качества поверхности, которые ожидаются от подшипника, применялись и к валу и к корпусу.</p><a href="{% url 'contacts' %}">Обсудить задачу с нами</a></div></section>
+<section class="home-intro">
+  <h1>{{ home_page.title|default:"Подшипники. Подбор и сопровождение."|linebreaksbr }}</h1>
+  {% if home_page.intro %}<div class="lead prose">{{ home_page.intro|linebreaks }}</div>{% endif %}
+  <a class="button" href="{% url 'catalog' %}">{{ home_page.catalog_label|default:"Перейти в каталог" }}</a>
+</section>
+{% for block in home_blocks %}
+<section class="{% if block.highlighted %}warranty{% else %}editorial-section{% endif %}">
+  <h2>{{ block.title }}</h2>
+  <div class="prose">
+    {{ block.body|linebreaks }}
+    {% if block.contact_link %}<a href="{% url 'contacts' %}">Обсудить задачу с нами</a>{% endif %}
+  </div>
+</section>
+{% endfor %}
 {% endblock %}

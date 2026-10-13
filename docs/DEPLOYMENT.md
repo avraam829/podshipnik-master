@@ -59,6 +59,40 @@ docker compose logs --tail=100 web proxy
 
 ## Обновление, backup и восстановление
 
+Для сервера gpz5.ru, установленного в `/opt/sba` из ветки
+`feat/site-production-redesign`, после push выполните под root:
+
+```bash
+set -euo pipefail
+cd /opt/sba
+STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+mkdir -p backups
+docker compose exec -T web python scripts/backup_database.py /data/db.sqlite3 "/data/backup-${STAMP}.sqlite3"
+docker compose cp "web:/data/backup-${STAMP}.sqlite3" "backups/backup-${STAMP}.sqlite3"
+cp -p .env "backups/env-${STAMP}"
+git fetch origin feat/site-production-redesign
+test "$(git branch --show-current)" = feat/site-production-redesign
+git merge --ff-only origin/feat/site-production-redesign
+docker compose --profile production up -d --build --wait
+docker compose exec -T web python manage.py check
+docker compose exec -T web python manage.py migrate --check
+docker compose --profile production ps
+curl -fsS https://gpz5.ru/health/
+```
+
+`.env` и Docker volumes сохраняются. Миграции применяются автоматически при
+старте контейнера. Если Git сообщает о локальных изменениях или расхождении
+веток, разберите их перед продолжением; не применяйте принудительный reset.
+Повторный запуск первоначального установщика с `rm -rf /opt/sba` не нужен.
+
+После обновления откройте `/admin/` → **Каталог → Главная страница** →
+**Главная страница**. Здесь редактируются заголовок, вступление и текст кнопки
+каталога. Ниже находятся блоки: можно добавить или удалить блок, изменить
+его заголовок и текст, задать порядок (меньше — выше), скрыть его или
+выделить фоном. Абзацы разделяются пустой строкой. HTML вводить не нужно.
+Нажмите «Сохранить» и «Смотреть на сайте». Контент хранится в базе и не
+перезаписывается последующими пересборками приложения.
+
 Перед обновлением работающей БД:
 
 ```sh
